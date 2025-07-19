@@ -3,11 +3,21 @@ using OpenQA.Selenium.Chrome;
 
 namespace EpamNUnit1;
 
+[TestFixture(false)]
+[TestFixture(true)]
 public class EpamTests
 {
     private const string url = "https://www.epam.com/";
-    private IWebDriver _driver;
+
+    private readonly bool _headless;
+
     private string _downloadPath;
+    private IWebDriver _driver;
+
+    public EpamTests(bool headless)
+    {
+        _headless = headless;
+    }
 
     [SetUp]
     public void SetUp()
@@ -37,6 +47,7 @@ public class EpamTests
     public void FindPosition_BySearchWord_PositionFoundTest(string searchWord)
     {
         IndexPage indexPage = new IndexPage(_driver);
+        indexPage.CheckCaptcha();
         indexPage.TryClickCookies();
         indexPage.ClickCarriesButton();
 
@@ -60,6 +71,7 @@ public class EpamTests
     public void Search_ByKeyword_LinksContainKeywordTest(string searchWord)
     {
         IndexPage indexPage = new IndexPage(_driver);
+        indexPage.CheckCaptcha();
         indexPage.ClickSearchIcon();
         indexPage.TypeSearchInput(searchWord);
         indexPage.ClickFindButton();
@@ -73,7 +85,10 @@ public class EpamTests
     [Test]
     public void DownloadFile_SuccessTest()
     {
+        var bodyText = _driver.FindElement(By.TagName("body")).Text;
+
         IndexPage indexPage = new IndexPage(_driver);
+        indexPage.CheckCaptcha();
         indexPage.TryClickCookies();
         indexPage.ClickAboutButton();
 
@@ -91,6 +106,7 @@ public class EpamTests
         const int countClick = 2;
 
         IndexPage indexPage = new IndexPage(_driver);
+        indexPage.CheckCaptcha();
         indexPage.ClickInsightsButton();
         indexPage.TryClickCookies();
 
@@ -113,6 +129,15 @@ public class EpamTests
         options.AddUserProfilePreference("download.default_directory", _downloadPath);
         options.AddUserProfilePreference("download.prompt_for_download", false);
         options.AddUserProfilePreference("disable-popup-blocking", "true");
+
+        if (_headless)
+        {
+            options.AddArgument("--headless=new");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--no-sandbox");
+        }
+        
         return new ChromeDriver(options);
     }
 
@@ -123,7 +148,7 @@ public class EpamTests
 
     private void ImplicitWait(IWebDriver driver)
     {
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(15);
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
     }
 
     private IWebDriver CreateConfigureDriver()

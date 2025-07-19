@@ -8,6 +8,7 @@ public class IndexPage
 {
     private readonly IWebDriver _driver;
 
+    private readonly By captcha = By.XPath("//*[contains(text(), 'Verifying you are human')]");
     private readonly By cookiesBanner = By.Id("onetrust-banner-sdk");
     private readonly By cookiesButton = By.Id("onetrust-accept-btn-handler");
     private readonly By carriesButton = By.LinkText("Careers");
@@ -57,7 +58,7 @@ public class IndexPage
         {
             try
             {
-                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(15));
+                var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
                 wait.Until(ExpectedConditions.ElementToBeClickable(cookiesButton));
                 _driver.FindElement(cookiesButton).Click();
                 break;
@@ -72,12 +73,29 @@ public class IndexPage
             }
         }
 
-        WebDriverWait bannerDisappearWait = new WebDriverWait(_driver, TimeSpan.FromSeconds(15));
+        WebDriverWait bannerDisappearWait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
 
         bannerDisappearWait.Until(x =>
         {
             var cookiesBannerElement = x.FindElement(cookiesBanner);
             return cookiesBannerElement == null || !cookiesBannerElement.Displayed;
         });
+    }
+
+    public void CheckCaptcha()
+    {
+        try
+        {
+            IWebElement captchaElement = _driver.FindElement(captcha);
+
+            if (captchaElement != null && captchaElement.Displayed)
+            {
+                throw new Exception("Captcha");
+            }
+        }
+        catch (NoSuchElementException)
+        {
+            return;
+        }
     }
 }

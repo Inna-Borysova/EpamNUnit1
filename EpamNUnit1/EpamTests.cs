@@ -1,5 +1,4 @@
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 
 namespace EpamNUnit1;
 
@@ -29,7 +28,7 @@ public class EpamTests
             Directory.Delete(_downloadPath, true);
         }
 
-        _driver = CreateConfigureDriver();
+        _driver = DriverFactory.CreateConfigureDriver(_downloadPath, _headless);
 
         _driver.Navigate().GoToUrl(url);
     }
@@ -121,41 +120,5 @@ public class EpamTests
         bool result = articleTitle.Contains(slideText) || slideText.Contains(articleTitle);
 
         Assert.That(result, Is.True);
-    }
-
-    private IWebDriver CreateDriver()
-    {
-        var options = new ChromeOptions();
-        options.AddUserProfilePreference("download.default_directory", _downloadPath);
-        options.AddUserProfilePreference("download.prompt_for_download", false);
-        options.AddUserProfilePreference("disable-popup-blocking", "true");
-
-        if (_headless)
-        {
-            options.AddArgument("--headless=new");
-            options.AddArgument("--window-size=1920,1080");
-            options.AddArgument("--disable-gpu");
-            options.AddArgument("--no-sandbox");
-        }
-        
-        return new ChromeDriver(options);
-    }
-
-    private void MaximazeWindow(IWebDriver driver)
-    {
-        driver.Manage().Window.Maximize();
-    }
-
-    private void ImplicitWait(IWebDriver driver)
-    {
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
-    }
-
-    private IWebDriver CreateConfigureDriver()
-    {
-        IWebDriver driver = CreateDriver();
-        MaximazeWindow(driver);
-        ImplicitWait(driver);
-        return driver;
     }
 }

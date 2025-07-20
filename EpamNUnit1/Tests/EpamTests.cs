@@ -1,43 +1,19 @@
-using OpenQA.Selenium;
+using EpamNUnit1.Pages;
 
-namespace EpamNUnit1;
+namespace EpamNUnit1.Tests;
 
-[TestFixture(false)]
-[TestFixture(true)]
-public class EpamTests
+public class EpamTests : BaseTests
 {
-    private const string url = "https://www.epam.com/";
-
-    private readonly bool _headless;
-
-    private string _downloadPath;
-    private IWebDriver _driver;
-
-    public EpamTests(bool headless)
-    {
-        _headless = headless;
-    }
-
     [SetUp]
-    public void SetUp()
+    public override void SetUp()
     {
-        _downloadPath = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "EpamDownloads"));
-
-        if (Directory.Exists(_downloadPath))
-        {
-            Directory.Delete(_downloadPath, true);
-        }
-
-        _driver = DriverFactory.CreateConfigureDriver(_downloadPath, _headless);
-
-        _driver.Navigate().GoToUrl(url);
+        base.SetUp();
     }
 
     [TearDown]
-    public void TearDown()
+    public override void TearDown()
     {
-        _driver.Quit();
-        _driver.Dispose();
+        base.TearDown();
     }
 
     [Test]
@@ -84,8 +60,6 @@ public class EpamTests
     [Test]
     public void DownloadFile_SuccessTest()
     {
-        var bodyText = _driver.FindElement(By.TagName("body")).Text;
-
         IndexPage indexPage = new IndexPage(_driver);
         indexPage.CheckCaptcha();
         indexPage.TryClickCookies();
@@ -94,7 +68,7 @@ public class EpamTests
         AboutPage aboutPage = new AboutPage(_driver);
         aboutPage.ScrollEpamAtGlanceSection();
         aboutPage.ClickDownloadButton();
-        bool isDowloaded = aboutPage.WaitForFileDownload(_driver, _downloadPath);
+        bool isDowloaded = aboutPage.WaitForCorporateOverviewDownload(_downloadPath);
 
         Assert.That(isDowloaded, Is.True);
     }

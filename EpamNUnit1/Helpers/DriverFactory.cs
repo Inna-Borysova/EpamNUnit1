@@ -6,16 +6,20 @@ namespace EpamNUnit1.Helpers;
 
 public class DriverFactory
 {
-    public static IWebDriver CreateDriver(string browser, bool headless, string downloadPath)
+    public static IWebDriver CreateDriver(string browser, bool headless, string? downloadPath)
     {
         switch (browser)
         {
             case "chrome":
                 {
                     var options = new ChromeOptions();
-                    options.AddUserProfilePreference("download.default_directory", downloadPath);
-                    options.AddUserProfilePreference("download.prompt_for_download", false);
-                    options.AddUserProfilePreference("disable-popup-blocking", "true");
+
+                    if (downloadPath != null)
+                    {
+                        options.AddUserProfilePreference("download.default_directory", downloadPath);
+                        options.AddUserProfilePreference("download.prompt_for_download", false);
+                        options.AddUserProfilePreference("disable-popup-blocking", "true");
+                    }
 
                     if (headless)
                     {
@@ -32,13 +36,16 @@ public class DriverFactory
                 {
                     var profile = new FirefoxProfile();
 
-                    profile.SetPreference("browser.download.folderList", 2);
-                    profile.SetPreference("browser.download.dir", downloadPath);
-                    profile.SetPreference("browser.helperApps.neverAsk.saveToDisk", "application/pdf,text/csv,application/octet-stream");
-                    profile.SetPreference("pdfjs.disabled", true);
-                    profile.SetPreference("browser.download.useDownloadDir", true);
-                    profile.SetPreference("browser.helperApps.alwaysAsk.force", false);
-
+                    if (downloadPath != null)
+                    {
+                        profile.SetPreference("browser.download.folderList", 2);
+                        profile.SetPreference("browser.download.dir", downloadPath);
+                        profile.SetPreference("browser.helperApps.neverAsk.saveToDisk", "application/pdf,text/csv,application/octet-stream");
+                        profile.SetPreference("pdfjs.disabled", true);
+                        profile.SetPreference("browser.download.useDownloadDir", true);
+                        profile.SetPreference("browser.helperApps.alwaysAsk.force", false);
+                    }
+                    
                     var options = new FirefoxOptions
                     {
                         Profile = profile
@@ -72,7 +79,7 @@ public class DriverFactory
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
     }
 
-    public static IWebDriver CreateConfigureDriver(string browser, bool headless, string downloadPath)
+    public static IWebDriver CreateConfigureDriver(string browser, bool headless, string? downloadPath)
     {
         IWebDriver driver = CreateDriver(browser, headless, downloadPath);
         driver.Manage().Window.Maximize();

@@ -4,18 +4,6 @@ namespace EpamNUnit1.Tests;
 
 public class EpamTests : BaseTests
 {
-    [SetUp]
-    public override void SetUp()
-    {
-        base.SetUp();
-    }
-
-    [TearDown]
-    public override void TearDown()
-    {
-        base.TearDown();
-    }
-
     [Test]
     [TestCase("java")]
     [TestCase(".net")]
@@ -55,22 +43,6 @@ public class EpamTests : BaseTests
         bool result = searchPage.IsGetSearchLinksContainsSearchword(searchWord);
 
         Assert.That(result, Is.True);
-    }
-
-    [Test]
-    public void DownloadFile_SuccessTest()
-    {
-        IndexPage indexPage = new IndexPage(_driver);
-        indexPage.CheckCaptcha();
-        indexPage.TryClickCookies();
-        indexPage.ClickAboutButton();
-
-        AboutPage aboutPage = new AboutPage(_driver);
-        aboutPage.ScrollEpamAtGlanceSection();
-        aboutPage.ClickDownloadButton();
-        bool isDowloaded = aboutPage.WaitForCorporateOverviewDownload(_downloadPath);
-
-        Assert.That(isDowloaded, Is.True);
     }
 
     [Test]

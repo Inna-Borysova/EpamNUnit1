@@ -4,18 +4,21 @@ namespace EpamNUnit1.Helpers;
 
 public class ConfigManager
 {
-    private readonly static IConfigurationRoot _config;
+    private readonly static ConfigManager _configManager = new ConfigManager();
+    private readonly IConfigurationRoot _config;
 
-    static ConfigManager()
+    public static ConfigManager Instance => _configManager;
+
+    private ConfigManager()
     {
         _config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
             .Build();
     }
 
-    public static string Browser => _config["TestSettings:Browser"];
+    public string Browser => _config["TestSettings:Browser"];
 
-    public static bool Headless => bool.Parse(_config["TestSettings:Headless"]);
+    public bool Headless => bool.Parse(_config["TestSettings:Headless"]);
 
-    public static string Url => _config["TestSettings:Url"];
+    public string Url => _config["TestSettings:Url"];
 }

@@ -22,4 +22,16 @@ public class Utility
             .ScrollToElement(webElement)
             .Perform();
     }
+
+    public static void TakeScreenshot(IWebDriver driver, string testName)
+    {
+        string screenshotsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Screenshots");
+        Directory.CreateDirectory(screenshotsDir);
+
+        string fileName = $"{testName}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png";
+        string filePath = Path.Combine(screenshotsDir, fileName);
+
+        Screenshot screenshot = ((ITakesScreenshot)driver).GetScreenshot();
+        screenshot.SaveAsFile(filePath);
+    }
 }

@@ -35,6 +35,7 @@ public class EpamTests : BaseTests
     {
         IndexPage indexPage = new IndexPage(_driver);
         indexPage.CheckCaptcha();
+        indexPage.TryClickCookies();
         indexPage.ClickSearchIcon();
         indexPage.TypeSearchInput(searchWord);
         indexPage.ClickFindButton();

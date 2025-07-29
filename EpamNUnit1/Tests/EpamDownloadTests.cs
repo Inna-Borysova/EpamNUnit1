@@ -10,9 +10,10 @@ public class EpamDownloadTests : BaseTests
     [SetUp]
     public override void SetUp()
     {
-        string browser = ConfigManager.Browser;
-        bool headless = ConfigManager.Headless;
-        string url = ConfigManager.Url;
+        ConfigManager configManager = ConfigManager.Instance;
+        string browser = configManager.Browser;
+        bool headless = configManager.Headless;
+        string url = configManager.Url;
 
         _downloadPath = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "EpamDownloads"));
 

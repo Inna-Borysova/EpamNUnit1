@@ -1,31 +1,19 @@
 ﻿using EpamNUnit1.Helpers;
-using OpenQA.Selenium;
 
 namespace EpamNUnit1.Tests;
 
-public abstract class BaseTests
+public class BaseTests
 {
-    protected IWebDriver _driver;
-
     [OneTimeSetUp]
     public void GlobalSetUp()
     {
-        Logger.LogInfo<BaseTests>("=== TEST RUN STARTED ===");
+        Logger.LogInfo<BaseUITests>("=== TEST RUN STARTED ===");
     }
 
     [SetUp]
     public virtual void SetUp()
     {
-        Logger.LogInfo<BaseTests>("Test Started: " + TestContext.CurrentContext.Test.Name);
-
-        ConfigManager configManager = ConfigManager.Instance;
-        string browser = configManager.Browser;
-        bool headless = configManager.Headless;
-        string url = configManager.Url;
-
-        _driver = DriverFactory.CreateConfigureDriver(browser, headless, null);
-
-        _driver.Navigate().GoToUrl(url);
+        Logger.LogInfo<BaseUITests>("Test Started: " + TestContext.CurrentContext.Test.Name);
     }
 
     [TearDown]
@@ -33,28 +21,18 @@ public abstract class BaseTests
     {
         if (TestContext.CurrentContext.Result.Outcome.Status == NUnit.Framework.Interfaces.TestStatus.Failed)
         {
-            Logger.LogError<BaseTests>("Test Failed: " + TestContext.CurrentContext.Test.Name);
-            Logger.LogError<BaseTests>("Error: " + TestContext.CurrentContext.Result.Message);
-
-            string testName = TestContext.CurrentContext.Test.MethodName;
-            Utility.TakeScreenshot(_driver, testName);
-            Logger.LogInfo<BaseTests>("Screenshot taken.");
+            Logger.LogError<BaseUITests>("Test Failed: " + TestContext.CurrentContext.Test.Name);
+            Logger.LogError<BaseUITests>("Error: " + TestContext.CurrentContext.Result.Message);
         }
         else
         {
-            Logger.LogInfo<BaseTests>("Test Passed: " + TestContext.CurrentContext.Test.Name);
-        }
-
-        if (_driver != null)
-        {
-            _driver.Quit();
-            _driver.Dispose();
+            Logger.LogInfo<BaseUITests>("Test Passed: " + TestContext.CurrentContext.Test.Name);
         }
     }
 
     [OneTimeTearDown]
     public void GlobalTearDown()
     {
-        Logger.LogInfo<BaseTests>("=== TEST RUN FINISHED ===");
+        Logger.LogInfo<BaseUITests>("=== TEST RUN FINISHED ===");
     }
 }

@@ -23,7 +23,7 @@ public class IndexPage : BasePage
     {
     }
 
-    public void ClickCarreesButton()
+    public void ClickCareersButton()
     {
         CarriesButton.Click();
     }

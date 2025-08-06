@@ -9,7 +9,7 @@ public class BaseSteps
 {
     private const string url = "https://www.epam.com/";
     private IWebDriver _driver;
-    protected IndexPage _indexPage;
+    private IndexPage _indexPage;
 
     public BaseSteps(ScenarioContext context)
     {

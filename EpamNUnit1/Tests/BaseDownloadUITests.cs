@@ -1,9 +1,8 @@
 ﻿using EpamNUnit1.Helpers;
-using EpamNUnit1.Pages;
 
 namespace EpamNUnit1.Tests;
 
-public class EpamDownloadTests : BaseTests
+public class BaseDownloadUITests : BaseUITests
 {
     protected string _downloadPath;
 
@@ -27,19 +26,14 @@ public class EpamDownloadTests : BaseTests
         _driver.Navigate().GoToUrl(url);
     }
 
-    [Test]
-    public void DownloadFile_SuccessTest()
+    [TearDown]
+    public override void TearDown()
     {
-        IndexPage indexPage = new IndexPage(_driver);
-        indexPage.CheckCaptcha();
-        indexPage.TryClickCookies();
-        indexPage.ClickAboutButton();
+        base.TearDown();
 
-        AboutPage aboutPage = new AboutPage(_driver);
-        aboutPage.ScrollEpamAtGlanceSection();
-        aboutPage.ClickDownloadButton();
-        bool isDowloaded = aboutPage.WaitForCorporateOverviewDownload(_downloadPath);
-
-        Assert.That(isDowloaded, Is.True);
+        if (Directory.Exists(_downloadPath))
+        {
+            Directory.Delete(_downloadPath, true);
+        }
     }
 }

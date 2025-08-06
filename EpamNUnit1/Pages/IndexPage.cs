@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 
@@ -15,12 +16,14 @@ public class IndexPage : BasePage
     private IWebElement SearchIcon => _driver.FindElement(By.ClassName("header__icon"));
     private IWebElement SearchInput => _driver.FindElement(By.TagName("input"));
     private IWebElement FindButton => _driver.FindElement(By.XPath("//div[contains(@class, 'search-results__action-section')]//button[contains(@class, 'custom-search-button')]"));
+    private IWebElement ServicesLink => _driver.FindElement(By.LinkText("Services"));
+    private System.Collections.ObjectModel.ReadOnlyCollection<IWebElement> TopNavigationLinks => _driver.FindElements(By.XPath("//a[@class='top-navigation__sub-link']"));
 
     public IndexPage(IWebDriver driver) : base(driver)
     {
     }
 
-    public void ClickCarriesButton()
+    public void ClickCarreesButton()
     {
         CarriesButton.Click();
     }
@@ -47,6 +50,18 @@ public class IndexPage : BasePage
     public void ClickFindButton()
     {
         FindButton.Click();
+    }
+
+    public void HoverServisLink()
+    {
+        Actions actions = new Actions(_driver);
+        actions.MoveToElement(ServicesLink).Perform();
+    }
+
+    public void ClickTopNavigationLink(string searchLink)
+    {
+        IWebElement generativeAiLink = TopNavigationLinks.First(x => string.Equals(x.Text, searchLink, StringComparison.OrdinalIgnoreCase));
+        generativeAiLink.Click();
     }
 
     public void TryClickCookies()

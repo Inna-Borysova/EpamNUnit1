@@ -4,20 +4,22 @@ using EpamNUnit1.Tests;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using System.Net;
+using EpamNUnit1.Models;
+using Newtonsoft.Json.Schema;
 
 namespace ApiTest.Tests;
 
 [TestFixture]
+[Category("API")]
 [Parallelizable(ParallelScope.All)]
 public class ApiTests : BaseApiTests
 {
     [Test]
     public void GetUsers_FieldsExistTest()
     {
-        RestRequest restRequest = new RestRequest("users", Method.Get);
-        RestResponse restResponse = _restClient.Execute(restRequest);
+        RestResponse restResponse = _userService.GetUsersResponse();
 
-        Logger.LogInfo<ApiTests>($"Request resource {restRequest.Resource} {restResponse.StatusCode}");
+        Logger.LogInfo<ApiTests>($"Request GetUsersResponse {restResponse.StatusCode}");
 
         Assert.That(restResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
@@ -25,41 +27,53 @@ public class ApiTests : BaseApiTests
 
         Assert.That(json, Is.Not.Null.And.Not.Empty);
 
+        string userSchema = @"{
+      ""type"": ""object"",
+      ""properties"": {
+        ""id"": { ""type"": ""integer"" },
+        ""name"": { ""type"": ""string"" },
+        ""username"": { ""type"": ""string"" },
+        ""email"": { ""type"": ""string"" },
+        ""address"": { ""type"": ""object"" },
+        ""phone"": { ""type"": ""string"" },
+        ""website"": { ""type"": ""string"" },
+        ""company"": { ""type"": ""object"" }
+      },
+      ""required"": [""id"", ""name"", ""username"", ""email"", ""address"", ""phone"", ""website"", ""company""]
+    }";
+
+        JSchema userJsonSchema = JSchema.Parse(userSchema);
+
         JArray jArray = JArray.Parse(json);
 
         foreach (JObject jObject in jArray)
         {
-            Assert.That(jObject.ContainsKey("id"), Is.True);
-            Assert.That(jObject.ContainsKey("name"), Is.True);
-            Assert.That(jObject.ContainsKey("username"), Is.True);
-            Assert.That(jObject.ContainsKey("email"), Is.True);
-            Assert.That(jObject.ContainsKey("address"), Is.True);
-            Assert.That(jObject.ContainsKey("phone"), Is.True);
-            Assert.That(jObject.ContainsKey("website"), Is.True);
-            Assert.That(jObject.ContainsKey("company"), Is.True);
+            Assert.That(jObject.IsValid(userJsonSchema), Is.True);
         }
     }
 
     [Test]
     public void GetUsers_CorrectHeader()
     {
-        RestRequest restRequest = new RestRequest("users", Method.Get);
-        RestResponse restResponse = _restClient.Execute(restRequest);
+        RestResponse<UserModel[]> restResponse = _userService.GetUsers();
 
-        Logger.LogInfo<ApiTests>($"Request resource {restRequest.Resource} {restResponse.StatusCode}");
+        Logger.LogInfo<ApiTests>($"Request GetUsers {restResponse.StatusCode}");
 
         Assert.That(restResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        Assert.That(restResponse.ContentType, Is.EqualTo("application/json"));
+
+        string? contentTypeHeader =
+            restResponse.ContentHeaders?.FirstOrDefault(x => x.Name.Equals("Content-Type", StringComparison.OrdinalIgnoreCase))?.Value;
+
+        Assert.That(contentTypeHeader, Is.Not.Null.And.Not.Empty);
+        Assert.That(contentTypeHeader, Is.EqualTo("application/json; charset=utf-8"));
     }
 
     [Test]
     public void GetUsers_FieldsAreCorrectTest()
     {
+        RestResponse<UserModel[]> restResponse = _userService.GetUsers();
 
-        RestRequest restRequest = new RestRequest("users", Method.Get);
-        RestResponse<UserModel[]> restResponse = _restClient.Execute<UserModel[]>(restRequest);
-
-        Logger.LogInfo<ApiTests>($"Request resource {restRequest.Resource} {restResponse.StatusCode}");
+        Logger.LogInfo<ApiTests>($"Request GetUsers {restResponse.StatusCode}");
 
         Assert.That(restResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
@@ -94,10 +108,15 @@ public class ApiTests : BaseApiTests
     [Test]
     public void CreateUser_ContainsIdTest()
     {
-        RestRequest restRequest = new RestRequest("users", Method.Post);
-        RestResponse<UserCreatedModel> restResponse = _restClient.Execute<UserCreatedModel>(restRequest);
+        CreateUserModel createUser = new CreateUserModel()
+        {
+            Name = "name",
+            UserName = "userName"
+        };
 
-        Logger.LogInfo<ApiTests>($"Request resource {restRequest.Resource} {restResponse.StatusCode}");
+        RestResponse<UserCreatedModel> restResponse = _userService.CreateUser(createUser);
+
+        Logger.LogInfo<ApiTests>($"Request CreateUser {restResponse.StatusCode}");
 
         Assert.That(restResponse.StatusCode, Is.EqualTo(HttpStatusCode.Created));
 
@@ -110,10 +129,9 @@ public class ApiTests : BaseApiTests
     [Test]
     public void InvalidEndpoint_NotFoundTest()
     {
-        RestRequest restRequest = new RestRequest("invalidendpoint", Method.Get);
-        RestResponse restResponse = _restClient.Execute(restRequest);
+        RestResponse restResponse = _invalidEndpointService.Get();
 
-        Logger.LogInfo<ApiTests>($"Request resource {restRequest.Resource} {restResponse.StatusCode}");
+        Logger.LogInfo<ApiTests>($"Request Get {restResponse.StatusCode}");
 
         Assert.That(restResponse.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }

@@ -1,24 +1,29 @@
-﻿using RestSharp;
+﻿using EpamNUnit1.Services;
+using RestSharp;
 
 namespace EpamNUnit1.Tests;
 
 public class BaseApiTests : BaseTests
 {
     private const string url = "https://jsonplaceholder.typicode.com";
-    protected RestClient _restClient;
+    protected UserService _userService;
+    protected InvalidEndpointService _invalidEndpointService;
 
+    [SetUp]
     public override void SetUp()
     {
         base.SetUp();
 
-        RestClientOptions restClientOptions = new RestClientOptions(url);
-        _restClient = new RestClient(restClientOptions);
+        _userService = new UserService(url);
+        _invalidEndpointService = new InvalidEndpointService(url);
     }
 
+    [TearDown]
     public override void TearDown()
     {
         base.TearDown();
 
-        _restClient.Dispose();
+        _userService.Dispose();
+        _invalidEndpointService.Dispose();
     }
 }

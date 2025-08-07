@@ -24,7 +24,7 @@ public class JobSearchByCriteriaSteps
     [When(@"I navigate to the ""Careers"" page")]
     public void WhenINavigateToThePage()
     {
-        _indexPage.ClickCarreesButton();
+        _indexPage.ClickCareersButton();
     }
 
     [When(@"I enter ""(.*)"" into the ""Keywords"" field")]

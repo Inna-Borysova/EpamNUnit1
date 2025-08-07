@@ -115,7 +115,7 @@ Logging should be implemented (NLog, log4net or Serilog). Each test should gener
 For this practical task, you should proceed to work with Selenium WebDriver along with SpecFlow and any SpecFlow runner and refactor the solution created in the Page Object module.
 The main objective of this task is to gain practical experience in writing automated tests using the Behavioral Driven Development (BDD) methodology. You will adapt an existing codebase, originally developed by you using the Page Object model, to incorporate BDD practices using Selenium WebDriver and SpecFlow.
 
-# Task #4
+# Task 4
 Implement the automated test using the SpecFlow BDD framework.
 
 Precondition:
@@ -133,7 +133,7 @@ Validate that the page contains the correct title.
 Validate that the section ‘Our Related Expertise’ is displayed on the page
 
 
-# Task #5
+# Task 5
 Enhance an existing solution based on the Page Object model using a BDD approach. This task requires you to organize your project with a clear and logical folder structure and to implement required classes for a fully functioning BDD test suite.
 Precondition: 
 Make sure you have Visual Studio (or a similar IDE), Selenium WebDriver, SpecFlow, and a compatible SpecFlow runner installed on your machine.
@@ -157,4 +157,60 @@ Adapt your Page Object classes to align with BDD steps. Ensure these objects rem
 Tasks #1-#4:
 Refactor automated tests created in previous module to follow SOLID, DRY, KISS, YAGNI principles, use Design Patterns (Singleton and Browser Factory) and add logging mechanism.  Solution should have Layers in Architecture and be able to execute on several environments.
 
+# Task 6
+Please use RestSharp library for creating API automated tests. 
 
+
+Update TAF adding an opportunity to support API testing:
+Update Core layer with the base client.
+Update Business layer with necessary business models.
+Tests’ layer should contain the implemented API tests (listed below).
+
+
+
+The solution should contain only one class with several test methods for API testing.  All tests should support parallelization mechanism.
+Use Builder Design Pattern to construct complex requests step by step.
+Logging should be implemented (NLog, log4net or Serilog) for API part of TAF as well. Each test should generate logs from what should be clear test actions. TAF should support logging to both, file and console, and opportunity to use different logging levels (Error, Info, etc.). Min log level should be configurable via TAF configuration. All implemented below tests should be marked with “API” test category.
+
+
+## Tasks #1. Validate that the list of users can be received successfully
+Create and send request to https://jsonplaceholder.typicode.com/usersusing GET method
+
+Validate that user recives a list of users with the following information: "id",  "name", "username", "email", "address”,     "phone",   "website",  "company";
+
+Validate that user receives 200 OK response code. There are no error messages;
+
+
+
+## Tasks #2. Validate response header for a list of users 
+Create and send request to https://jsonplaceholder.typicode.com/usersusing GET method.
+
+Validate content-type header exists in the obtained response.
+
+The value of the content-type header is application/json; charset=utf-8.
+
+Validate that user receives 200 OK response code. There are no error messages.
+
+## Tasks #3. Validate response header for a list of users 
+
+Create and send request to https://jsonplaceholder.typicode.com/usersusing GET method. 
+
+Validate that the content of the response body is the array of 10 users.
+
+Validate that each user should be with different ID.
+
+Validate that each user should be with non-empty Name and Username.
+
+Validate that each user contains the Company with non-empty Name Validate that user receives 200 OK response code. There are no error messages.
+
+## Tasks #4. Validate that user can be created
+Create and send request to https://jsonplaceholder.typicode.com/usersusing POST method with Name and Username fields 
+
+Validate that response is not empty and contains the ID value
+
+Validate that user receives 201 Created response code. There are no error messages
+
+## Tasks #5. Validate that user is notified if resource doesn’t exist
+Create and send a request to https://jsonplaceholder.typicode.com/invalidendpoint using GET method.
+
+Validate that user receives 404 Not Found response code. There are no error messages. 

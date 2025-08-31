@@ -1,4 +1,6 @@
-﻿using OpenQA.Selenium;
+﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 
 namespace EpamNUnit1.Helpers;
@@ -33,5 +35,12 @@ public class Utility
 
         Screenshot screenshot = ((ITakesScreenshot)driver).GetScreenshot();
         screenshot.SaveAsFile(filePath);
+    }
+
+    public static bool IsSchemaValid(string json, string schema)
+    {
+        JSchema jsonSchema = JSchema.Parse(schema);
+        JToken jsonToken = JToken.Parse(json);
+        return jsonToken.IsValid(jsonSchema);
     }
 }

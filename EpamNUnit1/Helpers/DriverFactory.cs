@@ -14,6 +14,9 @@ public class DriverFactory
                 {
                     var options = new ChromeOptions();
 
+                    string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                    options.AddArgument($"--user-data-dir={tempDir}");
+
                     if (downloadPath != null)
                     {
                         options.AddUserProfilePreference("download.default_directory", downloadPath);
@@ -65,8 +68,6 @@ public class DriverFactory
                     throw new ArgumentException();
                 }
         }
-
-        
     }
 
     public static void MaximazeWindow(IWebDriver driver)

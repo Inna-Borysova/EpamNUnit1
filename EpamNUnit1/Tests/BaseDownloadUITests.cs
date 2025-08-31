@@ -14,7 +14,7 @@ public class BaseDownloadUITests : BaseUITests
         bool headless = configManager.Headless;
         string url = configManager.Url;
 
-        _downloadPath = Path.GetFullPath(Path.Combine(Path.GetTempPath(), $"EpamDownloads{Guid.NewGuid:N}"));
+        _downloadPath = Path.GetFullPath(Path.Combine(Path.GetTempPath(), "EpamDownloads"));
 
         if (Directory.Exists(_downloadPath))
         {

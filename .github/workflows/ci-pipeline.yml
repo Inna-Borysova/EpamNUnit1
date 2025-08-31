@@ -61,6 +61,7 @@ jobs:
 
       - name: Run UI + DownloadUI Tests
         env:
+          Headless: true
           Browser: ${{ github.event.inputs.browser || 'chrome' }}
         run: dotnet test --filter "(Category=UI|Category=DownloadUI)" --logger "trx;LogFileName=ui-download-tests.trx"
 

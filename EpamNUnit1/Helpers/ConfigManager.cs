@@ -13,6 +13,7 @@ public class ConfigManager
     {
         _config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json")
+            .AddEnvironmentVariables()
             .Build();
     }
 

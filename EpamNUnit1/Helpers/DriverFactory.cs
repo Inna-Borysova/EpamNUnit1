@@ -34,7 +34,11 @@ public class DriverFactory
                         options.AddArgument("--disable-dev-shm-usage");
                     }
 
-                    return new ChromeDriver(options);
+                    var service = ChromeDriverService.CreateDefaultService();
+                    service.HideCommandPromptWindow = true;
+                    service.EnableVerboseLogging = false;
+
+                    return new ChromeDriver(service, options, TimeSpan.FromSeconds(60));
                 }
 
             case "firefox":

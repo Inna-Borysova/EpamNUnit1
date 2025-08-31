@@ -6,14 +6,14 @@ public class ApiRequestBuilder
 {
     private readonly RestRequest _request;
 
-    private ApiRequestBuilder(RestRequest request)
+    private ApiRequestBuilder(string resource, Method method)
     {
-        _request = request;
+        _request = new RestRequest(resource, method);
     }
 
     public static ApiRequestBuilder Create(string resource, Method method)
     {
-        return new ApiRequestBuilder(new RestRequest(resource, method));
+        return new ApiRequestBuilder(resource, method);
     }
 
     public ApiRequestBuilder AddHeader(string name, string value)

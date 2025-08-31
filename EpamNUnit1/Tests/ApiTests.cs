@@ -23,33 +23,14 @@ public class ApiTests : BaseApiTests
 
         Assert.That(restResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-        string? json = restResponse.Content;
+        string? jsonResponse = restResponse.Content;
 
-        Assert.That(json, Is.Not.Null.And.Not.Empty);
+        Assert.That(jsonResponse, Is.Not.Null.And.Not.Empty);
 
-        string userSchema = @"{
-      ""type"": ""object"",
-      ""properties"": {
-        ""id"": { ""type"": ""integer"" },
-        ""name"": { ""type"": ""string"" },
-        ""username"": { ""type"": ""string"" },
-        ""email"": { ""type"": ""string"" },
-        ""address"": { ""type"": ""object"" },
-        ""phone"": { ""type"": ""string"" },
-        ""website"": { ""type"": ""string"" },
-        ""company"": { ""type"": ""object"" }
-      },
-      ""required"": [""id"", ""name"", ""username"", ""email"", ""address"", ""phone"", ""website"", ""company""]
-    }";
+        string schema = File.ReadAllText("Schemas/UsersSchema.json");
+        bool isSchemaValid = Utility.IsSchemaValid(jsonResponse, schema);
 
-        JSchema userJsonSchema = JSchema.Parse(userSchema);
-
-        JArray jArray = JArray.Parse(json);
-
-        foreach (JObject jObject in jArray)
-        {
-            Assert.That(jObject.IsValid(userJsonSchema), Is.True);
-        }
+        Assert.That(isSchemaValid, Is.True);
     }
 
     [Test]

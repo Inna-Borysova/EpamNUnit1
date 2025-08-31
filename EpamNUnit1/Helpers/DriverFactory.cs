@@ -14,7 +14,8 @@ public class DriverFactory
                 {
                     var options = new ChromeOptions();
 
-                    string tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                    string tempDir = Path.Combine(Path.GetTempPath(), $"ChromeProfile_{Guid.NewGuid():N}");
+                    Directory.CreateDirectory(tempDir);
                     options.AddArgument($"--user-data-dir={tempDir}");
 
                     if (downloadPath != null)
@@ -30,6 +31,7 @@ public class DriverFactory
                         options.AddArgument("--window-size=1920,1080");
                         options.AddArgument("--disable-gpu");
                         options.AddArgument("--no-sandbox");
+                        options.AddArgument("--disable-dev-shm-usage");
                     }
 
                     return new ChromeDriver(options);

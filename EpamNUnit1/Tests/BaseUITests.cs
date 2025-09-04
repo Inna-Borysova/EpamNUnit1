@@ -8,7 +8,7 @@ public abstract class BaseUITests : BaseTests
     protected IWebDriver _driver;
 
     [SetUp]
-    public virtual void SetUp()
+    public override void SetUp()
     {
         base.SetUp();
 
@@ -23,7 +23,7 @@ public abstract class BaseUITests : BaseTests
     }
 
     [TearDown]
-    public virtual void TearDown()
+    public override void TearDown()
     {
         if (TestContext.CurrentContext.Result.Outcome.Status == NUnit.Framework.Interfaces.TestStatus.Failed)
         {

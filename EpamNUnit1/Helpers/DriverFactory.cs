@@ -14,10 +14,6 @@ public class DriverFactory
                 {
                     var options = new ChromeOptions();
 
-                    string tempDir = Path.Combine(Path.GetTempPath(), $"ChromeProfile_{Guid.NewGuid():N}");
-                    Directory.CreateDirectory(tempDir);
-                    options.AddArgument($"--user-data-dir={tempDir}");
-
                     if (downloadPath != null)
                     {
                         options.AddUserProfilePreference("download.default_directory", downloadPath);

@@ -56,8 +56,8 @@ jobs:
         with:
           dotnet-version: "8.0.x"
           
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
+      - name: Setup ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
         
       - name: Restore Dependencies
         run: dotnet restore

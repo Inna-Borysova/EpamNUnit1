@@ -16,6 +16,14 @@ on:
         options:
           - chrome
           - firefox
+      headless:
+      description: "Run browser in headless mode"
+      required: true
+      default: "true"
+      type: choice
+      options:
+        - "true"
+        - "false"
 
 jobs:
   api-tests:

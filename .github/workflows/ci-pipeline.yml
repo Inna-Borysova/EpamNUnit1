@@ -15,16 +15,7 @@ on:
         type: choice
         options:
           - chrome
-          - firefox
-      headless:
-      description: "Run browser in headless mode"
-      required: true
-      default: "true"
-      type: choice
-      options:
-        - "true"
-        - "false"
-
+          - firefox        
 jobs:
   api-tests:
     name: Run API Tests

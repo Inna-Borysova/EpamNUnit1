@@ -1,0 +1,107 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+      - master
+
+schedules:
+  - cron: "0 3 * * *"
+    displayName: Nightly Build
+    branches:
+      include:
+        - master
+    always: true
+
+parameters:
+  - name: browser
+    displayName: Browser for UI/DownloadUI tests
+    type: string
+    default: chrome
+    values:
+      - chrome
+      - firefox
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: API_Tests
+    displayName: Run API Tests
+    jobs:
+      - job: api_tests
+        steps:
+          - checkout: self
+
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '8.0.x'
+
+          - script: dotnet restore
+            displayName: Restore Dependencies
+
+          - script: dotnet test --filter Category=API --logger "trx;LogFileName=api-tests.trx"
+            displayName: Run API Tests
+
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFiles: '**/TestResults/*.trx'
+              testRunTitle: 'API Test Results'
+
+          - task: PublishBuildArtifacts@1
+            condition: always()
+            inputs:
+              pathToPublish: '**/TestResults/*.trx'
+              artifactName: 'api-test-results'
+
+  - stage: UI_Download_Tests
+    displayName: Run UI + DownloadUI Tests
+    dependsOn: API_Tests
+    condition: succeededOrFailed()
+    jobs:
+      - job: ui_download_tests
+        steps:
+          - checkout: self
+
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '8.0.x'
+
+          - script: |
+              sudo apt-get update
+              if [ ${{ parameters.browser }} = "chrome" ]; then
+                sudo apt-get install -y chromium-browser
+              else
+                sudo apt-get install -y firefox
+              fi
+            displayName: Install Browser
+
+          - script: dotnet restore
+            displayName: Restore Dependencies
+
+          - script: |
+              export Headless=true
+              export Browser=${{ parameters.browser }}
+              dotnet test --filter "(Category=UI|Category=DownloadUI)" --logger "trx;LogFileName=ui-download-tests.trx"
+            displayName: Run UI + DownloadUI Tests
+
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFiles: '**/TestResults/*.trx'
+              testRunTitle: 'UI + DownloadUI Test Results'
+
+          - task: PublishBuildArtifacts@1
+            condition: always()
+            inputs:
+              pathToPublish: '**/TestResults/*.trx'
+              artifactName: 'ui-downloadui-test-results'
+
+          - task: PublishBuildArtifacts@1
+            condition: always()
+            inputs:
+              pathToPublish: '**/Screenshots/**'
+              artifactName: 'ui-downloadui-screenshots'

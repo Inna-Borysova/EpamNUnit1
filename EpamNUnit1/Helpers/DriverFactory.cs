@@ -27,9 +27,14 @@ public class DriverFactory
                         options.AddArgument("--window-size=1920,1080");
                         options.AddArgument("--disable-gpu");
                         options.AddArgument("--no-sandbox");
+                        options.AddArgument("--disable-dev-shm-usage");
                     }
 
-                    return new ChromeDriver(options);
+                    var service = ChromeDriverService.CreateDefaultService();
+                    service.HideCommandPromptWindow = true;
+                    service.EnableVerboseLogging = false;
+
+                    return new ChromeDriver(service, options, TimeSpan.FromSeconds(60));
                 }
 
             case "firefox":
@@ -65,8 +70,6 @@ public class DriverFactory
                     throw new ArgumentException();
                 }
         }
-
-        
     }
 
     public static void MaximazeWindow(IWebDriver driver)

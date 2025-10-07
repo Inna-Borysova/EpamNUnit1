@@ -1,0 +1,81 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "0 3 * * *" 
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: "Browser for UI/DownloadUI tests"
+        required: true
+        default: "chrome"
+        type: choice
+        options:
+          - chrome
+          - firefox        
+jobs:
+  api-tests:
+    name: Run API Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Run API Tests
+        run: dotnet test --filter Category=API --logger "trx;LogFileName=api-tests.trx"
+
+      - name: Upload API Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-results
+          path: "**/TestResults/*.trx"
+
+  ui-download-tests:
+    name: Run UI + DownloadUI Tests
+    needs: api-tests
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+          
+      - name: Setup ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
+        
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Run UI + DownloadUI Tests
+        env:
+          Headless: true
+          Browser: ${{ github.event.inputs.browser || 'chrome' }}
+        run: dotnet test --filter "(Category=UI|Category=DownloadUI)" --logger "trx;LogFileName=ui-download-tests.trx"
+
+      - name: Upload UI + DownloadUI Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-downloadui-test-results
+          path: "**/TestResults/*.trx"
+
+      - name: Upload Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-downloadui-screenshots
+          path: "**/Screenshots/**"
